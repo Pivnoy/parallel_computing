@@ -1,3 +1,24 @@
 version: '3'
 
 tasks:
+  task1:
+    desc: "Компиляция с первыми опциями"
+    cmds:
+      - cmake -DTASK1=ON -S . -B build
+
+  task2:
+    desc: "Компиляция со вторыми опциями"
+    requires:
+      vars: [K]
+    cmds:
+      - cmake -DK:STRING={{.K}} -DTASK2=ON -S . -B build
+
+  task_for_4:
+    desc: "Задание на оценку 4"
+    cmds:
+      - cmake -DCMAKE_C_COMPILER=clang -DTASK3=ON -S . -B build
+
+  build:
+    desc: "Общая компиляция"
+    cmds:
+      - cmake --build build
