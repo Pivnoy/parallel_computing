@@ -22,3 +22,8 @@ tasks:
     desc: "Общая компиляция"
     cmds:
       - cmake --build build
+
+  clean:
+    desc: "Удаляем сборку"
+    cmds:
+      - rm -rf build/
