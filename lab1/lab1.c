@@ -36,8 +36,9 @@ int main(int argc, char *argv[]) {
 
         // 5. Reduce
         float min = min_sort(arr2);
-        float result = reduce(arr2,min);
-        printf("Result: %f\n", result);
+        reduce(arr2,min);
+//        float result = reduce(arr2,min);
+//        printf("Result: %f\n", result);
 
         delete(arr);
         delete(arr2);

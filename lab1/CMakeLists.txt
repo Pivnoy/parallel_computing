@@ -6,6 +6,7 @@ set(CMAKE_C_COMPILER gcc)
 option(TASK1 "Первое задание" OFF)
 option(TASK2 "Первое задание" OFF)
 option(TASK3 "Задание на 4" OFF)
+option(TASK4 "TK" OFF)
 
 if (TASK1)
     set(CMAKE_C_FLAGS "-O3 -Wall -Werror")
@@ -24,10 +25,15 @@ if (TASK3)
 endif()
 unset(TASK3 CACHE)
 
+if (TASK4)
+    set(CMAKE_C_FLAGS "-O3 -Wall -Werror -force-vector-width=${K}")
+endif()
+unset(TASK4 CACHE)
+
 message("-- Current compiler flags CMAKE_C_FLAGS are: ${CMAKE_C_FLAGS}")
 
 include_directories(lab1 include)
 
 add_compile_options(-Wall -Wextra -Wpedantic)
-add_executable(lab1 main.c src/array.c src/math_func.c)
+add_executable(lab1.c src/array.c src/math_func.c)
 target_link_libraries(lab1 m)
