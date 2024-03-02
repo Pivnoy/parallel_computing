@@ -34,6 +34,13 @@ void print(struct array * arr){
 void fill(struct array * arr, int maxValue, int minValue){
     if (arr != NULL) {
         if (arr->arr != NULL) {
+            #ifdef _OPENMP
+                #if defined(CHUNK_SIZE) && defined(SCHED_ALG)
+                    #pragma omp parallel for default(none) shared(arr, maxValue, minValue) schedule(SCHED_ALG, CHUNK_SIZE)
+                #else
+                    #pragma omp parallel for default(none) shared(arr, maxValue, minValue) schedule(auto)
+                #endif
+            #endif
             for (unsigned long i = 0; i < arr->size; ++i) {
                 seed = i;
                 arr->arr[i] = (maxValue <= minValue || abs(maxValue) == abs(minValue)) ? 0 : minValue + rand_r(&seed) %
@@ -47,7 +54,13 @@ void fill(struct array * arr, int maxValue, int minValue){
 
 void map(struct array * arr, float (*compute_func)(float)) {
     if (arr != NULL && compute_func != NULL) {
-        #pragma omp parallel for default(none) shared(arr, compute_func) schedule(auto)
+        #ifdef _OPENMP
+        #if defined(CHUNK_SIZE) && defined(SCHED_ALG)
+            #pragma omp parallel for default(none) shared(arr, compute_func) schedule(SCHED_ALG, CHUNK_SIZE)
+        #else
+            #pragma omp parallel for default(none) shared(arr, compute_func) schedule(auto)
+        #endif
+        #endif
         for (size_t i = 0; i < arr->size; ++i) {
             arr->arr[i] = compute_func(arr->arr[i]);
         }
@@ -69,6 +82,13 @@ struct array * copy(struct array * arr) {
     if (arr != NULL) {
         struct array * copy = new_array(arr->size);
         if (copy != NULL) {
+            #ifdef _OPENMP
+            #if defined(CHUNK_SIZE) && defined(SCHED_ALG)
+                #pragma omp parallel for default(none) shared(arr, copy) schedule(SCHED_ALG, CHUNK_SIZE)
+            #else
+                #pragma omp parallel for default(none) shared(arr, copy) schedule(auto)
+            #endif
+            #endif
             for (size_t i = 0; i < copy->size; ++i) {
                 copy->arr[i] = arr->arr[i];
             }
@@ -82,6 +102,13 @@ struct array * copy(struct array * arr) {
 void map_2(struct array * arr, float (*compute_func)(float, float)){
     struct array * m2_arr = copy(arr);
     if (m2_arr != NULL) {
+        #ifdef _OPENMP
+        #if defined(CHUNK_SIZE) && defined(SCHED_ALG)
+            #pragma omp parallel for default(none) shared(arr, m2_arr, compute_func) schedule(SCHED_ALG, CHUNK_SIZE)
+        #else
+            #pragma omp parallel for default(none) shared(arr, m2_arr, compute_func) schedule(auto)
+        #endif
+        #endif
         for (size_t i = 0; i < arr->size; ++i) {
             float m2i_prev = i == 0 ? 0 : m2_arr->arr[i - 1];
             arr->arr[i] = compute_func(m2_arr->arr[i], m2i_prev);
@@ -89,10 +116,17 @@ void map_2(struct array * arr, float (*compute_func)(float, float)){
     }
 }
 
-void merge(struct array * arr1, struct array * arr2) {
+void merge(struct array * arr1, struct array * arr2, float (*compute_func)(float, float)) {
     if (arr1 != NULL && arr2 != NULL) {
+        #ifdef _OPENMP
+        #if defined(CHUNK_SIZE) && defined(SCHED_ALG)
+            #pragma omp parallel for default(none) shared(arr1, arr2, compute_func) schedule(SCHED_ALG, CHUNK_SIZE)
+        #else
+            #pragma omp parallel for default(none) shared(arr1, arr2, compute_func) schedule(auto)
+        #endif
+        #endif
         for (size_t i = 0; i < arr2->size; ++i) {
-            arr2->arr[i] = max(arr1->arr[i],arr2->arr[i]);
+            arr2->arr[i] = compute_func(arr1->arr[i],arr2->arr[i]);
         }
     }
 }
@@ -122,6 +156,13 @@ float min_sort(struct array * arr){
 float reduce(struct array * arr, float minimum){
     if (arr != NULL) {
         float sum = 0;
+        #ifdef _OPENMP
+        #if defined(CHUNK_SIZE) && defined(SCHED_ALG)
+            #pragma omp parallel for default(none) shared(arr, minimum) schedule(SCHED_ALG, CHUNK_SIZE) reduction(+:sum)
+        #else
+            #pragma omp parallel for default(none) shared(arr, minimum) schedule(auto) reduction(+:sum)
+        #endif
+        #endif
         for (size_t i = 0; i < arr->size; ++i) {
             float value = arr->arr[i];
             if (value != 0 && value != NAN) {

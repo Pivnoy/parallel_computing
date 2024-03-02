@@ -1,6 +1,8 @@
 #pragma once
 
-#include <omp.h>
+#if defined(_OPENMP)
+    #include <omp.h>
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -20,7 +22,7 @@ void map(struct array * arr, float (*compute_func)(float));
 
 void map_2(struct array * arr, float (*compute_func)(float, float));
 
-void merge(struct array * arr1, struct array * arr2);
+void merge(struct array * arr1, struct array * arr2, float (*compute_func)(float, float));
 
 void sort(struct array * arr);
 
