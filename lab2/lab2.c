@@ -4,7 +4,6 @@
 
 #include "array.h"
 #include "math_func.h"
-#include "include/array.h"
 
 #define A 392
 #define ITERATIONS 100
@@ -12,12 +11,8 @@
 int main(int argc, char *argv[]) {
     if (argc < 2) return -1;
 
-#ifdef CHUNK_SIZE
-    printf("lala\n");
-#endif
 #if defined(_OPENMP)
-    omp_set_num_threads(4);
-    printf("%d\n", omp_get_num_threads());
+    omp_set_num_threads(16);
 #endif
 
     struct timeval T1, T2;
@@ -26,8 +21,8 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < ITERATIONS; i++) {
 
         // 1. Create
-        struct array * restrict arr = new_array(N);
-        struct array * restrict arr2 = new_array(N / 2);
+        struct array * arr = new_array(N);
+        struct array * arr2 = new_array(N / 2);
 
         fill(arr, A, 1);
         map(arr, to_sin);

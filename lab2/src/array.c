@@ -5,7 +5,7 @@ __thread unsigned int seed = 0;
 struct array {
     size_t current;
     size_t size;
-    float * restrict arr;
+    float * arr;
 };
 
 struct array * new_array(size_t size) {
@@ -31,7 +31,7 @@ void print(struct array * arr){
     }
 }
 
-void fill(struct array * arr, int maxValue, int minValue){
+void fill(struct array * restrict arr, int maxValue, int minValue){
     if (arr != NULL) {
         if (arr->arr != NULL) {
             #ifdef _OPENMP
@@ -52,7 +52,7 @@ void fill(struct array * arr, int maxValue, int minValue){
     }
 }
 
-void map(struct array * arr, float (*compute_func)(float)) {
+void map(struct array * restrict arr, float (*compute_func)(float)) {
     if (arr != NULL && compute_func != NULL) {
         #ifdef _OPENMP
         #if defined(CHUNK_SIZE) && defined(SCHED_ALG)
@@ -67,7 +67,7 @@ void map(struct array * arr, float (*compute_func)(float)) {
     }
 }
 
-void delete(struct array * arr) {
+void delete(struct array * restrict arr) {
     if (arr != NULL) {
         if (arr->arr != NULL) {
             free(arr->arr);
@@ -78,7 +78,7 @@ void delete(struct array * arr) {
     }
 }
 
-struct array * copy(struct array * arr) {
+struct array * copy(struct array * restrict arr) {
     if (arr != NULL) {
         struct array * copy = new_array(arr->size);
         if (copy != NULL) {
@@ -99,7 +99,7 @@ struct array * copy(struct array * arr) {
     return NULL;
 }
 
-void map_2(struct array * arr, float (*compute_func)(float, float)){
+void map_2(struct array * restrict arr, float (*compute_func)(float, float)){
     struct array * m2_arr = copy(arr);
     if (m2_arr != NULL) {
         #ifdef _OPENMP
@@ -113,10 +113,11 @@ void map_2(struct array * arr, float (*compute_func)(float, float)){
             float m2i_prev = i == 0 ? 0 : m2_arr->arr[i - 1];
             arr->arr[i] = compute_func(m2_arr->arr[i], m2i_prev);
         }
+        delete(m2_arr);
     }
 }
 
-void merge(struct array * arr1, struct array * arr2, float (*compute_func)(float, float)) {
+void merge(struct array * restrict arr1, struct array * restrict arr2, float (*compute_func)(float, float)) {
     if (arr1 != NULL && arr2 != NULL) {
         #ifdef _OPENMP
         #if defined(CHUNK_SIZE) && defined(SCHED_ALG)
@@ -131,7 +132,7 @@ void merge(struct array * arr1, struct array * arr2, float (*compute_func)(float
     }
 }
 
-void sort(struct array * arr) {
+void sort(struct array * restrict arr) {
     if (arr != NULL) {
         while (arr->current < arr->size) {
             if (arr->current == 0 || arr->arr[arr->current] >= arr->arr[arr->current - 1]) {
@@ -146,14 +147,14 @@ void sort(struct array * arr) {
     }
 }
 
-float min_sort(struct array * arr){
+float min_sort(struct array * restrict arr){
     if (arr != NULL) {
         return arr->arr[0];
     }
     return -20;
 }
 
-float reduce(struct array * arr, float minimum){
+float reduce(struct array * restrict arr, float minimum){
     if (arr != NULL) {
         float sum = 0;
         #ifdef _OPENMP
@@ -165,7 +166,7 @@ float reduce(struct array * arr, float minimum){
         #endif
         for (size_t i = 0; i < arr->size; ++i) {
             float value = arr->arr[i];
-            if (value != 0 && value != NAN) {
+            if (value != 0) {
                 if ((int)(value / minimum) == 0) {
                     sum += sin(value);
                 }
