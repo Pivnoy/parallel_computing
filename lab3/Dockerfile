@@ -4,6 +4,6 @@ RUN apt-get update && apt-get install -y wget  \
     lsb-release  \
     software-properties-common  \
     gnupg  \
-    make \
-    libomp-19-dev
+    make
 RUN wget https://apt.llvm.org/llvm.sh && chmod u+x llvm.sh && ./llvm.sh 19
+RUN apt-get install -y     libomp-19-dev

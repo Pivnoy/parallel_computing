@@ -155,8 +155,8 @@ void sort(struct array * restrict arr) {
 }
 
 
+#ifdef _OPENMP
 void parallel_sort(struct array *restrict arr) {
-    #ifdef _OPENMP
 
     struct array *left = array_k_part(arr, 0, arr->size / 2);
     struct array *right = array_k_part(arr, arr->size / 2, arr->size);
@@ -181,8 +181,8 @@ void parallel_sort(struct array *restrict arr) {
     delete(left);
     delete(right);
 
-    #endif
 }
+#endif
 
 float min_sort(struct array * restrict arr){
     if (arr != NULL) {

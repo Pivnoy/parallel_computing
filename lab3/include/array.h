@@ -33,5 +33,6 @@ float reduce(struct array *restrict arr, float minimum);
 
 void push(struct array *restrict arr, float value);
 
-void parallel_sort(struct array *restrict arr);
-
+#ifdef _OPENMP
+    void parallel_sort(struct array *restrict arr);
+#endif
