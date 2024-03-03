@@ -11,7 +11,7 @@
 int main(int argc, char *argv[]) {
     if (argc < 2) return -1;
 
-#if defined(_OPENMP)
+#ifdef _OPENMP
     omp_set_num_threads(16);
 #endif
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
         merge(arr, arr2, max);
 
         // 4. Sort
-        sort(arr2);
+        //sort(arr2);
 
         // 5. Reduce
         float min = min_sort(arr2);
