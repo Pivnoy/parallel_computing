@@ -182,6 +182,62 @@ void parallel_sort(struct array *restrict arr) {
     delete(right);
 
 }
+
+struct array * merge_two_sorted_arrs(struct array *restrict left, struct array *restrict right) {
+    struct array * arr = new_array(left->size + right->size);
+    size_t i = 0, j = 0, k = 0;
+    while (i < left->size || j < right->size) {
+        if ((i == left->size) || ((j < right->size) && (right->arr[j] < left->arr[i]))) {
+            arr->arr[k++] = right->arr[j++];
+        } else {
+            arr->arr[k++] = left->arr[i++];
+        }
+    }
+    delete(left);
+    return arr;
+}
+
+void parallel_sort_k(struct array *restrict arr){
+    size_t num = omp_get_num_procs();
+
+    struct array ** small_arr = (struct array **) malloc(sizeof(struct array *) * num);
+    print(arr);
+    printf("L\n");
+    size_t start = 0, part = arr->size / num;
+    for(size_t i = 0; i < num; ++i) {
+        if (i == num - 1) {
+            small_arr[i] = array_k_part(arr, start, arr->size);
+        } else {
+            small_arr[i] = array_k_part(arr, start, start + part);
+            start += part;
+        }
+    }
+#pragma omp parallel
+
+    for(size_t i = 0; i < num; ++i) {
+#pragma omp task shared(small_arr)
+        sort(small_arr[i]);
+    }
+#pragma omp taskwait
+
+    struct array * bs = new_array(0);
+
+    for(size_t i = 0; i < num; ++i) {
+        bs = merge_two_sorted_arrs(bs, small_arr[i]);
+    }
+
+    for (size_t j = 0; j < bs->size; j++) {
+        arr->arr[j] = bs->arr[j];
+    }
+
+    print(bs);
+    delete(bs);
+
+    for(size_t i = 0; i < num; ++i) {
+        delete(small_arr[i]);
+    }
+    free(small_arr);
+}
 #endif
 
 float min_sort(struct array * restrict arr){

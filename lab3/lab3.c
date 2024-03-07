@@ -6,7 +6,7 @@
 #include "math_func.h"
 
 #define A 392
-#define ITERATIONS 1
+#define ITERATIONS 100
 
 int main(int argc, char *argv[]) {
     if (argc < 2) return -1;
@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     struct timeval T1, T2;
     gettimeofday(&T1, NULL);
 #endif
-    for (int i = 0; i < ITERATIONS; i++) {
+    for (int i = 0; i < 1; i++) {
 
         srand(time(NULL));
 
@@ -46,7 +46,8 @@ int main(int argc, char *argv[]) {
 
         // 4. Sort
 #ifdef _OPENMP
-        parallel_sort(arr2);
+        parallel_sort_k(arr2);
+        //parallel_sort(arr2);
 #else
         sort(arr2);
 #endif

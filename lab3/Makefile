@@ -5,7 +5,7 @@ no-omp:
 	clang-19 $(PERF) $(MATH) -Wall -Werror -pedantic -o lab3-no-omp lab3.c src/array.c src/math_func.c -Iinclude -lm
 
 omp:
-	clang-19 $(PERF) $(MATH) -Wall -Werror -pedantic -o lab3-omp lab3.c src/array.c src/math_func.c -Iinclude -lm -fopenmp -lomp
+	clang-19 $(PERF) $(MATH) -Wall -Werror -pedantic -o lab3-omp lab3.c src/array.c src/math_func.c -Iinclude -lm -fopenmp -lomp -fsanitize=address
 
 clear:
 	rm -rf lab3-no-omp

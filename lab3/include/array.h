@@ -35,4 +35,5 @@ void push(struct array *restrict arr, float value);
 
 #ifdef _OPENMP
     void parallel_sort(struct array *restrict arr);
+    void parallel_sort_k(struct array *restrict arr);
 #endif
